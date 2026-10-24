@@ -1,0 +1,17 @@
+# Dependencies
+node_modules/
+
+# Local copy of the built site
+Exam Prep.html
+
+# Course material: keep it out of the public repo
+Lecture Notes/
+Assignment Questions.md
+Missing Question Statements and Images/
+*.pdf
+
+# OS / editor clutter
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
