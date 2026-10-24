@@ -10,6 +10,7 @@
   import { fly } from 'svelte/transition';
   import formulas from '../data/formulas.js';
   import FormulaCard from '../components/FormulaCard.svelte';
+  import SideNav from '../components/SideNav.svelte';
   
   export let week;
   export let tab = 'assignment';
@@ -27,26 +28,9 @@
   // Weeks without full formula cards fall back to the short list in weeks.js.
   $: extraF = wf.length ? [] : week.formulas || [];
 
-  // Right-hand topic nav: highlight the topic currently on screen.
-  let activeTopic = 0;
   const topicId = (i) => `topic-${week.week}-${i}`;
-  let clicked = 0;
-  function goTopic(i) {
-    clicked = i;
-    document.getElementById(topicId(i))?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  }
-  // The active topic is the last one whose heading has reached the top of the screen.
-  function onScroll() {
-    if (tab !== 'summary') return;
-    const line = 120;
-    let a = 0;
-    week.topics.forEach((_, i) => { const el = document.getElementById(topicId(i)); if (el && el.getBoundingClientRect().top <= line) a = i; });
-    if (window.innerHeight + window.scrollY >= document.body.scrollHeight - 2) a = Math.max(a, clicked);
-    activeTopic = a;
-  }
+  $: navItems = week.topics.map((t, i) => ({ id: topicId(i), label: t.title }));
 </script>
-
-<svelte:window on:scroll={onScroll} />
 
 <h1><span class="wk big">Week {week.week}</span> {week.title}</h1>
 <p class="muted">Source: {week.source}</p>
@@ -77,12 +61,7 @@
         <a class="btn ghost" href="#/week/{week.week}/revision">Take the revision quiz →</a>
       </div>
     </div>
-    <nav class="topicnav" aria-label="Topics this week">
-      <div class="navhead">On this page</div>
-      {#each week.topics as t, i}
-        <button class:active={activeTopic === i} on:click={() => goTopic(i)}>{t.title}</button>
-      {/each}
-    </nav>
+    <SideNav items={navItems} />
   </div>
 {:else if tab === 'diagrams'}
   <p class="muted">Click, drag and type in the diagrams below to explore this week's concepts.</p>

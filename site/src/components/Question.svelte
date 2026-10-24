@@ -32,10 +32,12 @@
     dispatch('answered', { correct: ok });
   }
 
-  function cls(i) {
+  // picked and done are passed in so the markup re-renders when they change
+  function cls(i, picked, done) {
     if (!done) return picked.includes(i) ? 'opt picked' : 'opt';
-    if (q.answer.includes(i)) return 'opt right';
-    if (picked.includes(i)) return 'opt wrong';
+    const mine = picked.includes(i) ? ' mine' : '';
+    if (q.answer.includes(i)) return 'opt right' + mine;
+    if (picked.includes(i)) return 'opt wrong' + mine;
     return 'opt dim';
   }
 </script>
@@ -83,9 +85,11 @@
   <ul class="opts">
     {#each q.options as o, i}
       <li>
-        <button class={cls(i)} on:click={() => choose(i)} disabled={done}>
+        <button class={cls(i, picked, done)} on:click={() => choose(i)} disabled={done}>
           <span class="mark">{q.multi ? (picked.includes(i) ? '☑' : '☐') : String.fromCharCode(65 + i)}</span>
-          <span>{o}</span>
+          <span class="otext">{o}</span>
+          {#if done && q.answer.includes(i)}<span class="obadge ok">✓ {picked.includes(i) ? 'Your answer' : 'Correct answer'}</span>
+          {:else if done && picked.includes(i)}<span class="obadge bad">✗ Your answer</span>{/if}
         </button>
       </li>
     {/each}
